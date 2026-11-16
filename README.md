@@ -29,7 +29,7 @@ iniciar (Paso 4).
 2. Clic derecho en **Databases > Create > Database...**, nombre **`restaurante_db`** y guardar.
 3. Clic derecho sobre **`restaurante_db`** > **Query Tool**.
 4. Abrir el archivo [`crear-bd-pgadmin.sql`](crear-bd-pgadmin.sql) (ícono de carpeta en el Query Tool) o copiar su
-   contenido, y ejecutarlo completo con **F5** o el botón ▶.
+   contenido, y ejecutarlo completo con **F5** o el botón.
 5. Debe terminar sin errores. Esto crea el usuario `restaurante` y le da permisos sobre la base.
 
 ---
