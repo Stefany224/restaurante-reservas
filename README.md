@@ -12,7 +12,7 @@ Hecha con **Spring Boot 3.5.6 (Java 21)**, **Spring MVC**, **Spring Data JPA**, 
 
 ```powershell
 git clone https://github.com/Stefany224/restaurante-reservas.git
-cd restaurante_reservas
+cd restaurante-reservas
 ```
 
 O descargar el ZIP desde GitHub (*Code > Download ZIP*) y descomprimirlo.
