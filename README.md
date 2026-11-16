@@ -50,12 +50,6 @@ iniciar (Paso 4).
 **Desde Eclipse:** abrir `src/main/java/cl/ipss/restaurante/RestauranteApplication.java`, clic derecho >
 **Run As > Java Application** (o **Spring Boot App** si tienes Spring Tools).
 
-**Desde la consola**, en la carpeta del proyecto:
-
-```powershell
-.\mvnw.cmd spring-boot:run      # Windows
-./mvnw spring-boot:run          # Linux / macOS
-```
 
 Cuando en la consola aparezca `Started RestauranteApplication`, abrir en el navegador:
 
