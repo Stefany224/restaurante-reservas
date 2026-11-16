@@ -11,7 +11,7 @@ Hecha con **Spring Boot 3.5.6 (Java 21)**, **Spring MVC**, **Spring Data JPA**, 
 ## Paso 1 · Clonar el proyecto
 
 ```powershell
-git clone https://github.com/Stefany224/restaurante_reservas.git
+git clone https://github.com/Stefany224/restaurante-reservas.git
 cd restaurante_reservas
 ```
 
