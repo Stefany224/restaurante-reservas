@@ -1,0 +1,229 @@
+/* Estilos de toda la pagina, aqui van los colores y tipografias del restaurante para reutilizarlos */
+:root {
+  --fondo: #f7f2ea;
+  --papel: #fffdf9;
+  --linea: #e4d9c7;
+  --texto: #2b2420;
+  --texto-suave: #6e6359;
+  --vino: #6b1e2e;
+  --vino-oscuro: #4a1420;
+  --dorado: #c08a3e;
+  --ok-fondo: #e3f1e6;     --ok-texto: #1f5130;
+  --alerta-fondo: #f8e3e0; --alerta-texto: #8a1c14;
+  --serif: 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
+  --sans: 'Karla', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* Base general de la pagina */
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } .menu-boton span { transition: none; } }
+body { margin: 0; font-family: var(--sans); font-size: 1rem; background: var(--fondo); color: var(--texto); line-height: 1.6;
+       min-height: 100vh; display: flex; flex-direction: column; }
+img { max-width: 100%; height: auto; }
+a { color: var(--vino); text-underline-offset: .2em; }
+:focus-visible { outline: 2px solid var(--dorado); outline-offset: 2px; }
+
+/* Titulos y textos */
+h1, h2, h3 { font-family: var(--serif); font-weight: 600; color: var(--vino); line-height: 1.15; }
+h1 { margin: 0 0 .5rem; font-size: 2.2rem; }
+h2 { margin: 0 0 .75rem; font-size: 1.9rem; }
+h3 { margin: 0 0 .25rem; font-size: 1.35rem; }
+p { margin: 0 0 .75rem; }
+.sub { color: var(--texto-suave); font-size: .95rem; }
+.contador { color: var(--vino); }
+
+/* Barra superior color vino que se queda pegada arriba al bajar */
+.barra { position: sticky; top: 0; z-index: 10; background: var(--vino); color: #f3dfc4;
+         padding: .55rem 1.25rem; display: flex; flex-wrap: wrap; gap: .5rem 1.5rem;
+         align-items: center; justify-content: space-between; }
+.marca { display: flex; align-items: center; gap: .6rem; text-decoration: none; color: #f8ead6; }
+.marca img { width: 46px; height: auto; }
+.marca span { font-family: var(--serif); font-size: 1.35rem; font-weight: 600; letter-spacing: .04em; }
+.marca-zona { font-size: .8rem; color: #e2c9a8; border-left: 1px solid rgba(243, 223, 196, .4); padding-left: .6rem; }
+.menu { display: flex; flex-wrap: wrap; gap: .25rem 1.5rem; align-items: center; }
+.menu a, .btn-enlace { color: #f3dfc4; text-decoration: none; font-size: .95rem; font-weight: 500; padding: .25rem 0;
+                       border-bottom: 1px solid transparent; }
+.menu a:hover, .btn-enlace:hover { color: #fff; border-bottom-color: var(--dorado); }
+.en-linea { display: inline; margin: 0; }
+.btn-enlace { background: none; border: 0; border-bottom: 1px solid transparent; cursor: pointer; font-family: inherit; width: auto; }
+.barra :focus-visible { outline-color: #f3dfc4; }
+
+/* Boton hamburguesa, al abrirse las tres rayas forman una X */
+.menu-boton { display: none; width: 44px; height: 40px; padding: 10px 9px; background: transparent;
+              border: 1px solid rgba(243, 223, 196, .45); border-radius: 3px; cursor: pointer;
+              flex-direction: column; justify-content: space-between; }
+.menu-boton span { display: block; height: 2px; background: #f3dfc4; transition: transform .2s, opacity .2s; }
+.barra.abierta .menu-boton span:nth-child(1) { transform: translateY(9px) rotate(45deg); }
+.barra.abierta .menu-boton span:nth-child(2) { opacity: 0; }
+.barra.abierta .menu-boton span:nth-child(3) { transform: translateY(-9px) rotate(-45deg); }
+
+/* Contenedor principal, flex 1 empuja el pie hasta el final de la pagina */
+main { flex: 1 0 auto; width: 100%; max-width: 70rem; margin: 0 auto; padding: 2rem 1.25rem 3.5rem; }
+main.angosto { max-width: 44rem; }
+.centro { text-align: center; }
+
+/* Paneles y encabezados con boton */
+.panel { background: var(--papel); border: 1px solid var(--linea); border-radius: 4px; padding: 1.25rem; }
+.titulo-con-accion { display: flex; flex-wrap: wrap; gap: .75rem; align-items: center; justify-content: space-between; margin-bottom: 1rem; }
+.titulo-con-accion h1 { margin: 0; }
+
+/* Portada del inicio con la foto de fondo oscurecida */
+.portada { position: relative; text-align: center; padding: 3.5rem 1.25rem 3rem; color: #f8ead6;
+           background:
+             linear-gradient(rgba(28, 10, 14, .78), rgba(28, 10, 14, .70)),
+             url("../img/fondo-restaurante.webp") center / cover no-repeat;
+           background-color: var(--vino-oscuro); }
+.portada-logo { width: min(320px, 72vw); margin: 0 auto 1.5rem; display: block; }
+.portada-bajada { max-width: 34rem; margin: 0 auto 1.75rem; font-family: var(--serif); font-size: 1.4rem; line-height: 1.45; color: #f8ead6; }
+.portada::after { content: ""; display: block; width: 64px; height: 1px; margin: 2.5rem auto 0; background: var(--dorado); }
+.portada .btn-sec { color: #f8ead6; border-color: #f8ead6; }
+.portada .btn-sec:hover { background: #f8ead6; color: var(--vino); }
+.portada .btn:not(.btn-sec) { background: var(--vino); border-color: var(--vino); }
+.portada .btn:not(.btn-sec):hover { background: #fff; border-color: #fff; color: var(--vino); }
+
+/* Secciones del inicio y preguntas frecuentes */
+.inicio { padding-top: 1rem; }
+.bloque { padding: 2.5rem 0; border-bottom: 1px solid var(--linea); display: grid; gap: 1.25rem; scroll-margin-top: 5rem; }
+.bloque:last-child { border-bottom: 0; }
+.bloque-texto p { max-width: 32rem; }
+.columnas { display: grid; gap: 1.5rem; }
+.preguntas details { border-top: 1px solid var(--linea); padding: .9rem 0; }
+.preguntas details:last-of-type { border-bottom: 1px solid var(--linea); }
+.preguntas summary { cursor: pointer; font-family: var(--serif); font-size: 1.25rem; font-weight: 600; color: var(--vino); }
+.preguntas details p { margin: .6rem 0 0; max-width: 40rem; }
+
+/* Formularios y buscadores */
+label { display: grid; gap: .3rem; font-weight: 500; font-size: .9rem; color: var(--texto-suave); }
+.opcional { font-weight: 400; }
+input, select, textarea, button { font: inherit; color: var(--texto); padding: .6rem .75rem; border-radius: 3px; border: 1px solid var(--linea);
+                                  min-width: 0; max-width: 100%;
+                                  background: #fff; width: 100%; }
+input[readonly] { background: #f2ede4; color: var(--texto-suave); }
+.casilla { display: flex; gap: .5rem; align-items: center; color: var(--texto); }
+.casilla input { width: auto; }
+fieldset { border: 0; padding: 0; margin: 0 0 1rem; display: grid; gap: .9rem; }
+legend { font-family: var(--serif); font-weight: 600; font-size: 1.4rem; margin-bottom: .5rem; color: var(--vino); }
+.formulario { display: grid; gap: 1rem; }
+.campos { display: grid; gap: .9rem; }
+.error-campo { display: block; color: #c62828; font-size: .98rem; font-weight: 700; line-height: 1.35; margin-top: .15rem; }
+.error-campo::before { content: "⚠ "; }
+/* Si el campo tiene error el borde se pone rojo */
+input:has(+ .error-campo), select:has(+ .error-campo), textarea:has(+ .error-campo) { border-color: #c62828; border-width: 2px; }
+.buscador { display: grid; gap: .9rem; margin-bottom: 1.25rem; }
+input:not([type=checkbox]), select, .buscador .btn { height: 2.75rem; }
+.buscador .btn { display: inline-flex; align-items: center; justify-content: center; }
+.botones { display: flex; flex-wrap: wrap; gap: .75rem; }
+.botones.centrados { justify-content: center; }
+
+/* Botones */
+.btn { display: inline-block; width: auto; text-align: center; background: var(--vino); border: 1px solid var(--vino); color: #fff;
+       font-family: var(--sans); font-weight: 500; letter-spacing: .02em; padding: .65rem 1.4rem; border-radius: 2px;
+       cursor: pointer; text-decoration: none; transition: background-color .15s; }
+.btn:hover { background: var(--vino-oscuro); border-color: var(--vino-oscuro); }
+.btn-sec { background: transparent; color: var(--vino); }
+.btn-sec:hover { background: var(--vino); color: #fff; }
+.btn-peligro { background: transparent; color: var(--alerta-texto); border-color: #dcaaa4; }
+.btn-peligro:hover { background: var(--alerta-fondo); border-color: var(--alerta-texto); }
+button:disabled { opacity: .45; cursor: not-allowed; }
+
+/* Tarjetas de mesas disponibles */
+.grilla-mesas { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr)); }
+.mesa { display: grid; gap: .35rem; justify-items: start; }
+.mesa p { margin: 0; }
+.mesa .btn { margin-top: .5rem; }
+.mesa-numero { font-family: var(--serif); font-size: 1.6rem; font-weight: 600; color: var(--vino); }
+
+/* Tablas */
+table { width: 100%; border-collapse: collapse; background: var(--papel); border: 1px solid var(--linea); }
+th, td { text-align: left; padding: .7rem .85rem; border-bottom: 1px solid var(--linea); vertical-align: middle; }
+th, .chip, .btn,
+td[data-label="Reserva"], td[data-label="Fecha"], td[data-label="Hora"], td[data-label="Personas"] { white-space: nowrap; }
+th { font-size: .85rem; font-weight: 700; color: var(--texto-suave); background: transparent; }
+tr.apagada { color: var(--texto-suave); }
+.acciones { display: flex; gap: .5rem; align-items: center; flex-wrap: wrap; }
+.acciones form { margin: 0; }
+.acciones .btn { padding: .4rem .9rem; font-size: .9rem; }
+.vacia { text-align: center; color: var(--texto-suave); padding: 1.5rem; }
+
+/* Etiquetas de estado y avisos de exito o error */
+.chip { display: inline-block; padding: .1rem .6rem; border-radius: 999px; font-size: .78rem; font-weight: 700; }
+.chip.ok { background: var(--ok-fondo); color: var(--ok-texto); }
+.chip.alerta { background: var(--alerta-fondo); color: var(--alerta-texto); }
+.chip.neutro { background: #ece4d6; color: var(--texto-suave); }
+.aviso { padding: .8rem 1rem; border-left: 4px solid; font-size: 1.02rem; font-weight: 600; margin: 0 0 1.25rem; }
+.aviso.exito { background: var(--ok-fondo); color: var(--ok-texto); }
+.aviso.error { background: var(--alerta-fondo); color: #c62828; }
+.nota-demo { margin-top: 1.25rem; font-size: .9rem; color: var(--texto-suave); border-top: 1px dashed var(--linea); padding-top: .9rem; }
+.codigo-error { font-family: var(--serif); font-size: 4rem; font-weight: 600; color: var(--vino); margin: 1rem 0 0; }
+
+/* Pie de pagina */
+.pie { background: var(--vino-oscuro); color: #e9d6bd; text-align: center; padding: 1.25rem 1.25rem 1rem; font-size: .85rem;
+       display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: .25rem 1.25rem; }
+.pie img { width: 40px; }
+.pie p { margin: 0; }
+.pie-nombre { font-family: var(--serif); font-size: 1.2rem; font-weight: 600; color: #f3dfc4; letter-spacing: .04em; }
+.pie .pie-legal { opacity: .65; font-size: .78rem; flex-basis: 100%; margin-top: .35rem; }
+
+/* Celular, el menu se vuelve hamburguesa y cada fila de la tabla se ve como ficha */
+@media (max-width: 699px) {
+  .marca span { font-size: 1.15rem; }
+  .marca-zona { display: none; }
+  .menu-boton { display: flex; }
+  .menu { display: none; width: 100%; flex-direction: column; align-items: stretch; gap: 0;
+          border-top: 1px solid rgba(243, 223, 196, .25); margin-top: .35rem; padding-top: .25rem; }
+  .barra.abierta .menu { display: flex; }
+  .menu a, .menu .btn-enlace { display: block; width: 100%; text-align: center; padding: .7rem .1rem; font-size: 1rem;
+                               border-bottom: 1px solid rgba(243, 223, 196, .15); }
+  .menu .en-linea { display: block; }
+  .tabla-responsiva, .tabla-responsiva tbody, .tabla-responsiva tr, .tabla-responsiva td { display: block; width: 100%; }
+  .tabla-responsiva { border: 0; background: transparent; }
+  .tabla-responsiva thead { display: none; }
+  .tabla-responsiva tr { background: var(--papel); border: 1px solid var(--linea); margin-bottom: .8rem; padding: .35rem 0; }
+  .tabla-responsiva td { border: 0; padding: .35rem 1rem; display: flex; gap: .75rem; justify-content: space-between; text-align: right;
+                         overflow-wrap: anywhere; }
+  .tabla-responsiva td::before { content: attr(data-label); font-weight: 700; color: var(--texto-suave); text-align: left; }
+  .tabla-responsiva td.vacia { display: block; text-align: center; }
+  .tabla-responsiva td.vacia::before { content: none; }
+  .tabla-responsiva td.celda-acciones { justify-content: space-between; align-items: center; }
+  .tabla-responsiva .acciones { justify-content: flex-end; }
+  .filtros-admin { grid-template-columns: 1fr; }
+  .buscador .btn, .formulario .btn { width: 100%; }
+}
+
+/* Tablet en adelante, los formularios pasan a dos columnas */
+@media (min-width: 700px) {
+  h1 { font-size: 2.6rem; }
+  h2 { font-size: 2.2rem; }
+  .campos { grid-template-columns: repeat(2, 1fr); }
+  .buscador { display: flex; flex-wrap: wrap; align-items: end; }
+  .buscador label { flex: 1 1 9rem; }
+  .buscador .crece { flex: 3 1 18rem; }
+  .columnas { grid-template-columns: repeat(3, 1fr); }
+  .portada { padding: 5rem 1.25rem 4rem; }
+}
+
+/* Computador, las secciones del inicio se ven en dos columnas */
+@media (min-width: 960px) {
+  .bloque { grid-template-columns: 1fr 1.4fr; gap: 3rem; align-items: start; padding: 3.5rem 0; }
+  .bloque.horarios, .bloque.preguntas { grid-template-columns: 1fr 2.4fr; }
+  .bloque .buscador { margin: 0; }
+}
+
+/* Filtros del admin en una sola fila */
+@media (min-width: 700px) {
+  .filtros-admin label { flex: 1 1 14rem; }
+  .filtros-admin label + label { flex: 0 1 15rem; }
+}
+
+/* Resumen fijo de la reserva en el formulario */
+.resumen { margin: 0; display: grid; grid-template-columns: repeat(2, 1fr); gap: .9rem 1.5rem;
+           padding: 1rem 1.1rem; background: var(--fondo); border: 1px solid var(--linea); border-radius: 3px; }
+.resumen dt { font-size: .85rem; color: var(--texto-suave); }
+.resumen dd { margin: 0; font-family: var(--serif); font-size: 1.35rem; font-weight: 600; color: var(--vino); }
+.enlace-cambiar { justify-self: start; font-size: .92rem; }
+@media (min-width: 700px) {
+  .resumen { grid-template-columns: repeat(4, auto); justify-content: space-between; }
+}
+
+.contador-texto { justify-self: end; font-size: .8rem; color: var(--texto-suave); font-weight: 400; }

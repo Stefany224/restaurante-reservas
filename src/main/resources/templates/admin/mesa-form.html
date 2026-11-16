@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: cabeza(${editando ? 'Editar mesa' : 'Nueva mesa'})}"></head>
+<body>
+<header th:replace="~{fragments :: menu}"></header>
+<main class="angosto">
+  <h1 th:text="${editando} ? 'Editar mesa' : 'Nueva mesa'">Nueva mesa</h1>
+
+  <div th:replace="~{fragments :: avisos}"></div>
+
+  <!-- Formulario de mesas, el mismo sirve para crear y editar -->
+  <form class="panel formulario" method="post" th:object="${mesa}"
+        th:action="${editando} ? @{/admin/mesas/{id}/editar(id=${mesaId})} : @{/admin/mesas}">
+    <div class="campos">
+      <label>Número
+        <input type="number" th:field="*{numero}" min="1" max="999" required>
+        <small class="error-campo" th:if="${#fields.hasErrors('numero')}" th:errors="*{numero}"></small>
+      </label>
+      <label>Capacidad (personas)
+        <input type="number" th:field="*{capacidad}" min="1" max="20" required>
+        <small class="error-campo" th:if="${#fields.hasErrors('capacidad')}" th:errors="*{capacidad}"></small>
+      </label>
+      <label>Ubicación
+        <select th:field="*{ubicacion}" required>
+          <option value="">Selecciona</option>
+          <option th:each="u : ${ubicaciones}" th:value="${u}" th:text="${u.etiqueta}">Salón</option>
+        </select>
+        <small class="error-campo" th:if="${#fields.hasErrors('ubicacion')}" th:errors="*{ubicacion}"></small>
+      </label>
+    </div>
+    <!-- Desmarcar activa saca la mesa del buscador sin borrar su historial -->
+    <label class="casilla">
+      <input type="checkbox" th:field="*{activa}"> Mesa activa (disponible para reservar)
+    </label>
+    <div class="botones">
+      <button type="submit" class="btn">Guardar</button>
+      <a class="btn btn-sec" th:href="@{/admin/mesas}">Volver</a>
+    </div>
+  </form>
+</main>
+</body>
+</html>

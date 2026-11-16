@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: cabeza('Reservas · Administración')}"></head>
+<body>
+<header th:replace="~{fragments :: menu}"></header>
+<main>
+  <h1>Reservas</h1>
+
+  <!-- Filtros por dia y por tipo, van por GET asi quedan en la direccion -->
+  <form class="panel buscador filtros-admin" method="get" th:action="@{/admin/reservas}">
+    <label>Día
+      <input type="date" name="fecha" th:value="${fecha}">
+    </label>
+    <label>Tipo de filtro
+      <select name="filtro">
+        <option value="">Todas</option>
+        <option th:each="f : ${filtros}" th:value="${f}" th:text="${f.etiqueta}" th:selected="${f == filtro}">Activas</option>
+      </select>
+    </label>
+    <button type="submit" class="btn">Filtrar</button>
+  </form>
+
+  <div th:replace="~{fragments :: avisos}"></div>
+
+  <p class="sub">
+    <span th:text="${filtro != null} ? ${filtro.etiqueta} : 'Todas las reservas'">Todas las reservas</span><span
+          th:if="${fecha != null}" th:text="' del ' + ${#temporals.format(fecha, 'dd-MM-yyyy')}"> del 01-01-2026</span>:
+    <strong th:text="${#lists.size(reservas)}">0</strong> en total,
+    <strong class="contador" th:text="${activas}">0</strong> activas
+  </p>
+
+  <!-- Las canceladas se ven apagadas y solo las activas se pueden cancelar -->
+  <table class="tabla-responsiva">
+    <thead>
+      <tr><th>#</th><th>Fecha</th><th>Hora</th><th>Mesa</th><th>Cliente</th><th>Personas</th><th>Comentario</th><th>Estado</th><th></th></tr>
+    </thead>
+    <tbody>
+      <tr th:each="r : ${reservas}" th:classappend="${r.estado.name() == 'CANCELADA'} ? 'apagada'">
+        <td data-label="Reserva" th:text="${r.id}">1</td>
+        <td data-label="Fecha" th:text="${#temporals.format(r.fecha, 'dd-MM-yyyy')}">01-01-2026</td>
+        <td data-label="Hora" th:text="${#temporals.format(r.hora, 'HH:mm')}">20:00</td>
+        <td data-label="Mesa" th:text="${r.numeroMesa} + ' (' + ${r.ubicacionMesa.etiqueta} + ')'">3 · Salón</td>
+        <td data-label="Cliente">
+          <div>
+            <strong th:text="${r.nombreCliente}">Ana</strong><br>
+            <small th:text="${r.emailCliente} + ', ' + ${r.telefonoCliente}">ana@correo.cl</small>
+          </div>
+        </td>
+        <td data-label="Personas" th:text="${r.personas}">2</td>
+        <td data-label="Comentario" th:text="${r.comentario} ?: '—'">—</td>
+        <td data-label="Estado">
+          <th:block th:replace="~{fragments :: estadoReserva(${r})}"></th:block>
+        </td>
+        <td class="celda-acciones" data-label="Acciones">
+          <div class="acciones">
+          <form th:if="${r.modificable}" method="post" th:action="@{/admin/reservas/{id}/cancelar(id=${r.id})}"
+                onsubmit="return confirm('¿Cancelar esta reserva?');">
+            <!-- se mandan los filtros para volver a la misma vista despues de cancelar -->
+            <input type="hidden" name="fecha" th:value="${fecha}">
+            <input type="hidden" name="filtro" th:value="${filtro}">
+            <button type="submit" class="btn btn-peligro">Cancelar</button>
+          </form>
+          <span class="sub" th:unless="${r.modificable}">—</span>
+          </div>
+        </td>
+      </tr>
+      <tr th:if="${#lists.isEmpty(reservas)}"><td colspan="9" class="vacia">No hay reservas para mostrar</td></tr>
+    </tbody>
+  </table>
+</main>
+</body>
+</html>

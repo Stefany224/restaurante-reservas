@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: cabeza('Mis reservas')}"></head>
+<body>
+<header th:replace="~{fragments :: menu}"></header>
+<main>
+  <h1>Mis reservas</h1>
+  <p class="sub">Ingresa el correo con que reservaste para ver, modificar o cancelar tus reservas.</p>
+
+  <form class="panel buscador" method="get" th:action="@{/reservas/mis-reservas}">
+    <label class="crece">Correo
+      <input type="email" name="email" th:value="${email}" placeholder="tucorreo@ejemplo.cl" required>
+    </label>
+    <button type="submit" class="btn">Ver mis reservas</button>
+  </form>
+
+  <div th:replace="~{fragments :: avisos}"></div>
+
+  <th:block th:if="${reservas != null}">
+    <!-- En el celular cada fila se ve como ficha y data-label pone el titulo de cada dato -->
+    <table class="tabla-responsiva">
+      <thead>
+        <tr><th>#</th><th>Fecha</th><th>Hora</th><th>Mesa</th><th>Personas</th><th>Estado</th><th>Acciones</th></tr>
+      </thead>
+      <tbody>
+        <tr th:each="r : ${reservas}">
+          <td data-label="Reserva" th:text="${r.id}">1</td>
+          <td data-label="Fecha" th:text="${#temporals.format(r.fecha, 'dd-MM-yyyy')}">01-01-2026</td>
+          <td data-label="Hora" th:text="${#temporals.format(r.hora, 'HH:mm')}">20:00</td>
+          <td data-label="Mesa" th:text="${r.numeroMesa} + ' (' + ${r.ubicacionMesa.etiqueta} + ')'">3 · Salón</td>
+          <td data-label="Personas" th:text="${r.personas}">2</td>
+          <td data-label="Estado">
+            <th:block th:replace="~{fragments :: estadoReserva(${r})}"></th:block>
+          </td>
+          <td class="celda-acciones" data-label="Acciones">
+            <!-- Los botones van en un div porque si el td fuera flex la fila se descuadra -->
+            <div class="acciones">
+            <th:block th:if="${r.modificable}">
+              <a class="btn btn-sec" th:href="@{/reservas/{id}/editar(id=${r.id}, email=${r.emailCliente})}">Modificar</a>
+              <form method="post" th:action="@{/reservas/{id}/cancelar(id=${r.id})}"
+                    onsubmit="return confirm('¿Seguro que quieres cancelar esta reserva?');">
+                <input type="hidden" name="email" th:value="${r.emailCliente}">
+                <button type="submit" class="btn btn-peligro">Cancelar</button>
+              </form>
+            </th:block>
+            <span class="sub" th:unless="${r.modificable}">—</span>
+            </div>
+          </td>
+        </tr>
+        <tr th:if="${#lists.isEmpty(reservas)}">
+          <td colspan="7" class="vacia">No encontramos reservas con ese correo. <a th:href="@{/reservas/disponibilidad}">Haz una reserva</a></td>
+        </tr>
+      </tbody>
+    </table>
+  </th:block>
+</main>
+<footer th:replace="~{fragments :: pie}"></footer>
+</body>
+</html>

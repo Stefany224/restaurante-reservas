@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: cabeza('Ingreso del personal')}"></head>
+<body>
+<header th:replace="~{fragments :: menu}"></header>
+<main class="angosto">
+  <h1>Ingreso del personal</h1>
+  <p class="sub">Zona exclusiva para el personal del restaurante: administración de mesas y reservas.</p>
+
+  <!-- Spring Security manda a /login?error si la clave esta mal y a /login?salir al cerrar sesion -->
+  <p class="aviso error" th:if="${param.error}">Usuario o clave incorrectos.</p>
+  <p class="aviso exito" th:if="${param.salir}">Cerraste sesión correctamente.</p>
+
+  <!-- El POST lo procesa Spring Security y por eso los campos se llaman username y password -->
+  <form class="panel formulario" method="post" th:action="@{/login}">
+    <label>Usuario
+      <input type="text" name="username" autocomplete="username" required autofocus>
+    </label>
+    <label>Clave
+      <input type="password" name="password" autocomplete="current-password" required>
+    </label>
+    <button type="submit" class="btn">Ingresar</button>
+  </form>
+
+</main>
+<footer th:replace="~{fragments :: pie}"></footer>
+</body>
+</html>

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: cabeza('Disponibilidad')}"></head>
+<body>
+<header th:replace="~{fragments :: menu}"></header>
+<main>
+  <h1 th:text="${modificando} ? 'Cambiar reserva #' + ${reservaId} : 'Mesas disponibles'">Mesas disponibles</h1>
+  <p class="sub" th:unless="${modificando}">Te mostramos solo las mesas libres en ese turno y con espacio para tu grupo.</p>
+  <p class="sub" th:if="${modificando}">Elige el nuevo día, hora o cantidad de personas y luego la mesa. Tu mesa actual aparece como libre.
+    <a th:href="@{/reservas/{id}/editar(id=${reservaId}, email=${email})}">Volver sin cambiar</a></p>
+
+  <!-- Buscador por GET para que la busqueda quede en la direccion -->
+  <form class="panel buscador" method="get" th:action="@{/reservas/disponibilidad}">
+    <label>Fecha
+      <input type="date" name="fecha" th:value="${fecha}" th:min="${hoy}" required>
+    </label>
+    <label>Hora
+      <select name="hora" required>
+        <option th:each="h : ${horarios}" th:value="${h}" th:text="${h}" th:selected="${h == hora}">20:00</option>
+      </select>
+    </label>
+    <label>Personas
+      <input type="number" name="personas" min="1" max="20" th:value="${personas}" required>
+    </label>
+    <!-- al modificar se mandan ocultos la reserva y el correo para no perderlos -->
+    <th:block th:if="${modificando}">
+      <input type="hidden" name="reservaId" th:value="${reservaId}">
+      <input type="hidden" name="email" th:value="${email}">
+    </th:block>
+    <button type="submit" class="btn">Buscar</button>
+  </form>
+
+  <div th:replace="~{fragments :: avisos}"></div>
+
+  <!-- mesas solo existe cuando se hizo una busqueda valida -->
+  <th:block th:if="${mesas != null}">
+    <p class="sub">
+      <strong th:text="${#lists.size(mesas)}">0</strong> mesas libres el
+      <strong th:text="${#temporals.format(fecha, 'dd-MM-yyyy')}">01-01-2026</strong> a las
+      <strong th:text="${hora}">20:00</strong> para <strong th:text="${personas}">2</strong> personas
+    </p>
+
+    <div class="grilla-mesas">
+      <article class="panel mesa" th:each="m : ${mesas}">
+        <p class="mesa-numero" th:text="'Mesa ' + ${m.numero}">Mesa 1</p>
+        <p class="chip neutro" th:text="${m.ubicacion.etiqueta}">Salón</p>
+        <p th:text="'Hasta ' + ${m.capacidad} + ' personas'">Hasta 4 personas</p>
+        <!-- Al reservar va al formulario y al modificar vuelve a la reserva con la mesa nueva -->
+        <a class="btn" th:unless="${modificando}"
+           th:href="@{/reservas/nueva(mesaId=${m.id}, fecha=${fecha}, hora=${hora}, personas=${personas})}">Reservar esta mesa</a>
+        <a class="btn" th:if="${modificando}"
+           th:href="@{/reservas/{id}/editar(id=${reservaId}, email=${email}, mesaId=${m.id}, fecha=${fecha}, hora=${hora}, personas=${personas})}">Elegir esta mesa</a>
+      </article>
+    </div>
+
+    <p class="panel vacia" th:if="${#lists.isEmpty(mesas)}">
+      No quedan mesas libres para ese turno. Prueba con otra hora u otro día.
+    </p>
+  </th:block>
+</main>
+<footer th:replace="~{fragments :: pie}"></footer>
+</body>
+</html>

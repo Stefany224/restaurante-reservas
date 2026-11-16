@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: cabeza('Inicio')}"></head>
+<body>
+<header th:replace="~{fragments :: menu}"></header>
+
+<!-- Portada con la foto del restaurante oscurecida y el logo encima -->
+<section class="portada">
+  <img class="portada-logo" th:src="@{/img/logo-completo-claro.png}" alt="Sabor Gourmet" width="408" height="323">
+  <p class="portada-bajada">Cocina de autor con productos de temporada. Reserva tu mesa en línea y recibe la confirmación al instante.</p>
+  <div class="botones centrados">
+    <a class="btn" href="#reservar">Reservar una mesa</a>
+    <a class="btn btn-sec" href="#mis-reservas">Gestionar mi reserva</a>
+  </div>
+</section>
+
+<main class="inicio">
+
+  <!-- Buscador de mesas, manda fecha, hora y personas a /reservas/disponibilidad -->
+  <section id="reservar" class="bloque">
+    <div class="bloque-texto">
+      <h2>Reserva tu mesa</h2>
+      <p>Elige el día, el turno y cuántas personas vienen. Te mostramos solo las mesas libres y con espacio para tu grupo.</p>
+      <p class="sub">Aceptamos reservas con hasta 60 días de anticipación.</p>
+    </div>
+    <form class="panel buscador" method="get" th:action="@{/reservas/disponibilidad}">
+      <label>Fecha
+        <input type="date" name="fecha" th:min="${hoy}" th:value="${hoy}" required>
+      </label>
+      <label>Hora
+        <select name="hora" required>
+          <option th:each="h : ${horarios}" th:value="${h}" th:text="${h}">20:00</option>
+        </select>
+      </label>
+      <label>Personas
+        <input type="number" name="personas" min="1" max="20" value="2" required>
+      </label>
+      <button type="submit" class="btn">Ver mesas disponibles</button>
+    </form>
+  </section>
+
+  <!-- Con el correo el cliente entra a ver, modificar o cancelar sus reservas -->
+  <section id="mis-reservas" class="bloque">
+    <div class="bloque-texto">
+      <h2>Gestiona tu reserva</h2>
+      <p>Ingresa el correo con que reservaste para ver tus reservas, cambiar el día, la hora o la mesa, o cancelarlas.</p>
+    </div>
+    <form class="panel buscador" method="get" th:action="@{/reservas/mis-reservas}">
+      <label class="crece">Correo
+        <input type="email" name="email" placeholder="tucorreo@ejemplo.cl" required>
+      </label>
+      <button type="submit" class="btn">Ver mis reservas</button>
+    </form>
+  </section>
+
+  <!-- Horarios y salones del restaurante -->
+  <section class="bloque horarios">
+    <h2>Horarios</h2>
+    <div class="columnas">
+      <div>
+        <h3>Almuerzo</h3>
+        <p>Turnos a las 13:00, 14:00 y 15:00.</p>
+      </div>
+      <div>
+        <h3>Cena</h3>
+        <p>Turnos a las 20:00, 21:00 y 22:00.</p>
+      </div>
+      <div>
+        <h3>Salones</h3>
+        <p>Salón principal, terraza y una sala privada para grupos de hasta 10 personas.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Preguntas frecuentes, details se abre y cierra sin JavaScript -->
+  <section class="bloque preguntas">
+    <h2>Preguntas frecuentes</h2>
+    <div>
+    <details>
+      <summary>¿Cómo reservo?</summary>
+      <p>Busca una fecha y hora en <a href="#reservar">Reserva tu mesa</a>, elige una de las mesas libres y completa tus datos. La mesa queda tomada para ti en ese turno.</p>
+    </details>
+    <details>
+      <summary>¿Puedo cambiar o cancelar mi reserva?</summary>
+      <p>Sí, hasta la hora de la reserva. Entra a <a href="#mis-reservas">Gestiona tu reserva</a> con tu correo y elige Modificar o Cancelar.</p>
+    </details>
+    <details>
+      <summary>¿Reciben grupos grandes?</summary>
+      <p>Las mesas son para un máximo de 10 personas en la sala privada. Para grupos de más de 20 personas escríbenos directamente.</p>
+    </details>
+    </div>
+  </section>
+</main>
+
+<footer th:replace="~{fragments :: pie}"></footer>
+</body>
+</html>

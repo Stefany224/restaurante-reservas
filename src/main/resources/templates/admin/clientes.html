@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: cabeza('Clientes · Administración')}"></head>
+<body>
+<header th:replace="~{fragments :: menu}"></header>
+<main>
+  <h1>Clientes</h1>
+  <p class="sub">Los clientes se registran solos al hacer su primera reserva.</p>
+
+  <!-- Los clientes se crean solos en su primera reserva -->
+  <table class="tabla-responsiva">
+    <thead><tr><th>Nombre</th><th>Correo</th><th>Teléfono</th><th>Cliente desde</th><th>Reservas activas</th></tr></thead>
+    <tbody>
+      <tr th:each="c : ${clientes}">
+        <td data-label="Nombre"><strong th:text="${c.nombre}">Ana</strong></td>
+        <td data-label="Correo" th:text="${c.email}">ana@correo.cl</td>
+        <td data-label="Teléfono" th:text="${c.telefono}">+56 9</td>
+        <td data-label="Cliente desde" th:text="${#temporals.format(c.creadoEn, 'dd-MM-yyyy')}">01-01-2026</td>
+        <td data-label="Reservas activas" th:text="${c.reservasActivas}">0</td>
+      </tr>
+      <tr th:if="${#lists.isEmpty(clientes)}"><td colspan="5" class="vacia">Aún no hay clientes</td></tr>
+    </tbody>
+  </table>
+</main>
+</body>
+</html>

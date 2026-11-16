@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: cabeza('Mesas · Administración')}"></head>
+<body>
+<header th:replace="~{fragments :: menu}"></header>
+<main>
+  <div class="titulo-con-accion">
+    <h1>Mesas</h1>
+    <a class="btn" th:href="@{/admin/mesas/nueva}">+ Nueva mesa</a>
+  </div>
+
+  <div th:replace="~{fragments :: avisos}"></div>
+
+  <!-- Las mesas inactivas se ven apagadas -->
+  <table class="tabla-responsiva">
+    <thead><tr><th>Número</th><th>Capacidad</th><th>Ubicación</th><th>Estado</th><th>Acciones</th></tr></thead>
+    <tbody>
+      <tr th:each="m : ${mesas}" th:classappend="${!m.activa} ? 'apagada'">
+        <td data-label="Número"><strong th:text="'Mesa ' + ${m.numero}">Mesa 1</strong></td>
+        <td data-label="Capacidad" th:text="${m.capacidad} + ' personas'">4 personas</td>
+        <td data-label="Ubicación" th:text="${m.ubicacion.etiqueta}">Salón</td>
+        <td data-label="Estado">
+          <span class="chip ok" th:if="${m.activa}">Activa</span>
+          <span class="chip alerta" th:unless="${m.activa}">Inactiva</span>
+        </td>
+        <td class="celda-acciones" data-label="Acciones">
+          <div class="acciones">
+          <a class="btn btn-sec" th:href="@{/admin/mesas/{id}/editar(id=${m.id})}">Editar</a>
+          <form method="post" th:action="@{/admin/mesas/{id}/eliminar(id=${m.id})}"
+                onsubmit="return confirm('¿Eliminar esta mesa?');">
+            <button type="submit" class="btn btn-peligro">Eliminar</button>
+          </form>
+          </div>
+        </td>
+      </tr>
+      <tr th:if="${#lists.isEmpty(mesas)}"><td colspan="5" class="vacia">Aún no hay mesas registradas</td></tr>
+    </tbody>
+  </table>
+</main>
+</body>
+</html>

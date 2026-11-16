@@ -1,0 +1,50 @@
+# Configuracion de la app, los valores entre llaves se pueden cambiar con variables de entorno
+server:
+  port: ${SERVER_PORT:8085}
+
+spring:
+  application:
+    name: restaurante-reservas
+  # Conexion a PostgreSQL
+  datasource:
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:restaurante_db}
+    username: ${DB_USER:restaurante}
+    password: ${DB_PASSWORD:restaurante}
+  jpa:
+    # Las consultas se hacen en el service y no mientras se arma la vista
+    open-in-view: false
+    hibernate:
+      # Hibernate solo revisa que las entidades calcen con las tablas, las tablas las crea Flyway
+      ddl-auto: validate
+    properties:
+      hibernate:
+        format_sql: true
+  # Flyway ejecuta los scripts de db/migration al levantar la app
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+  thymeleaf:
+    # Sin cache para ver los cambios de las vistas sin reiniciar
+    cache: false
+
+# Usuario y clave del personal que lee SecurityConfig
+app:
+  admin:
+    usuario: ${ADMIN_USUARIO:admin}
+    clave: ${ADMIN_CLAVE:admin123}
+
+# Logs en consola y en logs/restaurante-reservas.log, se guarda un archivo por dia y se borran a los 7 dias
+logging:
+  file:
+    name: logs/${spring.application.name}.log
+  logback:
+    rollingpolicy:
+      max-file-size: 10MB
+      file-name-pattern: ${LOG_FILE}.%d{yyyy-MM-dd}.%i
+      max-history: 7
+  level:
+    root: INFO
+    cl.ipss: ${LOG_LEVEL_APP:INFO}
+    org.springframework.web: INFO
+    # Muestra en el log las consultas SQL que genera Hibernate
+    org.hibernate.SQL: DEBUG
