@@ -61,9 +61,6 @@ Cuando en la consola aparezca `Started RestauranteApplication`, abrir en el nave
 
 **<http://localhost:8085>**
 
-La primera vez **Flyway** ejecuta los scripts de `src/main/resources/db/migration` y crea las tablas con mesas,
-clientes y reservas de ejemplo, por eso la base no se importa a mano.
-
 ---
 
 ## Paso 5 · Probar el sistema
