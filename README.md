@@ -11,8 +11,8 @@ Hecha con **Spring Boot 3.5.6 (Java 21)**, **Spring MVC**, **Spring Data JPA**, 
 ## Paso 1 · Clonar el proyecto
 
 ```powershell
-git clone https://github.com/Stefany224/restaurante_reservas.git
-cd restaurante_reservas
+git clone https://github.com/Stefany224/restaurante-reservas.git
+cd restaurante-reservas
 ```
 
 O descargar el ZIP desde GitHub (*Code > Download ZIP*) y descomprimirlo.
@@ -29,7 +29,7 @@ iniciar (Paso 4).
 2. Clic derecho en **Databases > Create > Database...**, nombre **`restaurante_db`** y guardar.
 3. Clic derecho sobre **`restaurante_db`** > **Query Tool**.
 4. Abrir el archivo [`crear-bd-pgadmin.sql`](crear-bd-pgadmin.sql) (ícono de carpeta en el Query Tool) o copiar su
-   contenido, y ejecutarlo completo con **F5** o el botón ▶.
+   contenido, y ejecutarlo completo con **F5**.
 5. Debe terminar sin errores. Esto crea el usuario `restaurante` y le da permisos sobre la base.
 
 ---
@@ -50,19 +50,10 @@ iniciar (Paso 4).
 **Desde Eclipse:** abrir `src/main/java/cl/ipss/restaurante/RestauranteApplication.java`, clic derecho >
 **Run As > Java Application** (o **Spring Boot App** si tienes Spring Tools).
 
-**Desde la consola**, en la carpeta del proyecto:
-
-```powershell
-.\mvnw.cmd spring-boot:run      # Windows
-./mvnw spring-boot:run          # Linux / macOS
-```
 
 Cuando en la consola aparezca `Started RestauranteApplication`, abrir en el navegador:
 
 **<http://localhost:8085>**
-
-La primera vez **Flyway** ejecuta los scripts de `src/main/resources/db/migration` y crea las tablas con mesas,
-clientes y reservas de ejemplo, por eso la base no se importa a mano.
 
 ---
 
