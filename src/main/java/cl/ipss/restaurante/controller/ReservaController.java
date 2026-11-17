@@ -1,9 +1,9 @@
 package cl.ipss.restaurante.controller;
 
+import cl.ipss.restaurante.dto.MesaResponse;
 import cl.ipss.restaurante.dto.ReservaForm;
 import cl.ipss.restaurante.dto.ReservaResponse;
 import cl.ipss.restaurante.exception.ReglaNegocioException;
-import cl.ipss.restaurante.service.MesaService;
 import cl.ipss.restaurante.service.ReservaService;
 import jakarta.validation.Valid;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -24,6 +24,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Set;
 
 // ReservaController maneja todo lo del cliente, buscar mesas, reservar, ver sus reservas, modificarlas y cancelarlas
@@ -37,14 +38,12 @@ public class ReservaController {
     // Datos del cliente que al modificar una reserva vienen bloqueados y no se vuelven a validar
     private static final Set<String> CAMPOS_CLIENTE = Set.of("nombre", "email", "telefono");
 
-    // Services que usa el controller
+    // Service que usa el controller
     private final ReservaService reservaService;
-    private final MesaService mesaService;
 
-    // Spring entrega los services por el constructor
-    public ReservaController(ReservaService reservaService, MesaService mesaService) {
+    // Spring entrega el service por el constructor
+    public ReservaController(ReservaService reservaService) {
         this.reservaService = reservaService;
-        this.mesaService = mesaService;
     }
 
     // Antes de validar se quitan los espacios del inicio y del final de todos los textos
@@ -53,30 +52,24 @@ public class ReservaController {
         binder.registerCustomEditor(String.class, new StringTrimmerEditor(false));
     }
 
-    // Buscador de mesas libres, si trae reservaId y email es porque el cliente esta modificando una reserva
+    // Buscador de mesas libres para una reserva nueva
     @GetMapping("/disponibilidad")
     public String disponibilidad(
             @RequestParam(name = "fecha", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fecha,
             @RequestParam(name = "hora", required = false) @DateTimeFormat(pattern = "HH:mm") LocalTime hora,
             @RequestParam(name = "personas", required = false) Integer personas,
-            @RequestParam(name = "reservaId", required = false) Long reservaId,
-            @RequestParam(name = "email", required = false) String email,
             Model model) {
-        boolean modificando = reservaId != null && email != null && !email.isBlank();
         model.addAttribute("horarios", reservaService.horarios());
         model.addAttribute("hoy", LocalDate.now());
         model.addAttribute("fecha", fecha);
         model.addAttribute("hora", hora);
         model.addAttribute("personas", personas == null ? 2 : personas);
-        model.addAttribute("modificando", modificando);
-        model.addAttribute("reservaId", modificando ? reservaId : null);
-        model.addAttribute("email", modificando ? email : null);
 
         // solo buscamos cuando vienen los tres datos, la primera vez la pagina sale vacia
         if (fecha != null && hora != null && personas != null) {
             try {
                 model.addAttribute("mesas",
-                        reservaService.mesasDisponibles(fecha, hora, personas, modificando ? reservaId : null));
+                        reservaService.mesasDisponibles(fecha, hora, personas, null));
             } catch (ReglaNegocioException ex) {
                 model.addAttribute("error", ex.getMessage());
             }
@@ -84,16 +77,21 @@ public class ReservaController {
         return "reservas/disponibilidad";
     }
 
-    // Formulario para confirmar la reserva con la mesa que el cliente eligio en el buscador
+    // Formulario para confirmar la reserva, parte con lo elegido en el buscador y si el cliente cambia el dia,
+    // la hora o las personas la pagina se recarga con esos valores sin perder lo que ya escribio
     @GetMapping("/nueva")
     public String nueva(
             @RequestParam(name = "mesaId", required = false) Long mesaId,
             @RequestParam(name = "fecha", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fecha,
             @RequestParam(name = "hora", required = false) @DateTimeFormat(pattern = "HH:mm") LocalTime hora,
             @RequestParam(name = "personas", required = false) Integer personas,
+            @RequestParam(name = "nombre", required = false) String nombre,
+            @RequestParam(name = "email", required = false) String email,
+            @RequestParam(name = "telefono", required = false) String telefono,
+            @RequestParam(name = "comentario", required = false) String comentario,
             Model model) {
-        // si falta algun dato es porque no vino del buscador, asi que lo devolvemos ahi
-        if (mesaId == null || fecha == null || hora == null || personas == null) {
+        // si falta el turno es porque no vino del buscador, asi que lo devolvemos ahi
+        if (fecha == null || hora == null || personas == null) {
             return "redirect:/reservas/disponibilidad";
         }
         ReservaForm form = new ReservaForm();
@@ -101,6 +99,10 @@ public class ReservaController {
         form.setFecha(fecha);
         form.setHora(hora);
         form.setPersonas(personas);
+        form.setNombre(nombre);
+        form.setEmail(email);
+        form.setTelefono(telefono);
+        form.setComentario(comentario);
         return mostrarFormulario(model, form, null);
     }
 
@@ -132,22 +134,23 @@ public class ReservaController {
         return "reservas/mis-reservas";
     }
 
-    // Formulario para modificar una reserva, si viene del buscador trae la nueva mesa y turno
+    // Formulario para modificar una reserva, cuando el cliente cambia el dia, la hora o las personas
+    // la pagina se recarga con esos valores para mostrar las mesas libres
     @GetMapping("/{id}/editar")
     public String editar(@PathVariable("id") Long id, @RequestParam(name = "email") String email,
                          @RequestParam(name = "mesaId", required = false) Long mesaId,
                          @RequestParam(name = "fecha", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fecha,
                          @RequestParam(name = "hora", required = false) @DateTimeFormat(pattern = "HH:mm") LocalTime hora,
                          @RequestParam(name = "personas", required = false) Integer personas,
+                         @RequestParam(name = "comentario", required = false) String comentario,
                          Model model, RedirectAttributes redirect) {
         try {
             ReservaForm form = reservaService.formularioEdicion(id, email);
-            if (mesaId != null && fecha != null && hora != null && personas != null) {
-                form.setMesaId(mesaId);
-                form.setFecha(fecha);
-                form.setHora(hora);
-                form.setPersonas(personas);
-            }
+            if (fecha != null) form.setFecha(fecha);
+            if (hora != null) form.setHora(hora);
+            if (personas != null) form.setPersonas(personas);
+            if (mesaId != null) form.setMesaId(mesaId);
+            if (comentario != null) form.setComentario(comentario);
             return mostrarFormulario(model, form, id);
         } catch (ReglaNegocioException ex) {
             redirect.addFlashAttribute("error", ex.getMessage());
@@ -194,11 +197,35 @@ public class ReservaController {
 
     // Carga lo que necesita la vista del formulario, la usan crear y modificar
     private String mostrarFormulario(Model model, ReservaForm form, Long reservaId) {
+        cargarOpciones(model, form, reservaId);
         model.addAttribute("reserva", form);
         model.addAttribute("reservaId", reservaId);
         model.addAttribute("editando", reservaId != null);
-        model.addAttribute("mesa", form.getMesaId() == null ? null : mesaService.obtener(form.getMesaId()));
         return "reservas/formulario";
+    }
+
+    // Horarios y solo las mesas libres para el dia, hora y personas elegidos,
+    // al modificar la mesa de la propia reserva cuenta como libre
+    private void cargarOpciones(Model model, ReservaForm form, Long reservaId) {
+        model.addAttribute("horarios", reservaService.horarios());
+        model.addAttribute("hoy", LocalDate.now());
+        List<MesaResponse> mesas = List.of();
+        if (form.getFecha() != null && form.getHora() != null && form.getPersonas() != null) {
+            try {
+                mesas = reservaService.mesasDisponibles(form.getFecha(), form.getHora(), form.getPersonas(), reservaId);
+            } catch (ReglaNegocioException ex) {
+                // si ya hay un error de guardar no lo tapamos
+                if (!model.containsAttribute("error")) {
+                    model.addAttribute("error", ex.getMessage());
+                }
+            }
+        }
+        // si la mesa elegida ya no sirve para el turno nuevo el cliente tiene que elegir otra
+        Long mesaId = form.getMesaId();
+        if (mesaId != null && mesas.stream().noneMatch(m -> m.id().equals(mesaId))) {
+            form.setMesaId(null);
+        }
+        model.addAttribute("mesas", mesas);
     }
 
     // Arma el texto con el resumen de la reserva para el mensaje de exito

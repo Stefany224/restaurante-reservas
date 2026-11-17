@@ -10,43 +10,38 @@
 
   <!-- th:object enlaza el formulario con ReservaForm y la misma vista sirve para crear y modificar -->
   <form class="panel formulario" method="post" th:object="${reserva}"
-        th:action="${editando} ? @{/reservas/{id}/editar(id=${reservaId})} : @{/reservas}">
-
-    <!-- Mesa, dia, hora y personas vienen del buscador y no se pueden cambiar aqui, el service igual los vuelve a validar -->
-    <input type="hidden" th:field="*{mesaId}">
-    <input type="hidden" th:field="*{fecha}">
-    <input type="hidden" th:field="*{hora}">
-    <input type="hidden" th:field="*{personas}">
+        th:action="${editando} ? @{/reservas/{id}/editar(id=${reservaId})} : @{/reservas}"
+        th:attr="data-recargar=${editando} ? @{/reservas/{id}/editar(id=${reservaId}, email=*{email})} : @{/reservas/nueva}">
 
     <fieldset>
       <legend>Tu reserva</legend>
-      <dl class="resumen">
-        <div>
-          <dt>Mesa</dt>
-          <dd th:if="${mesa != null}" th:text="'Mesa ' + ${mesa.numero} + ', ' + ${mesa.ubicacion.etiqueta}">Mesa 3, Salón</dd>
-        </div>
-        <div>
-          <dt>Día</dt>
-          <dd th:text="${reserva.fecha != null} ? ${#temporals.format(reserva.fecha, 'dd-MM-yyyy')} : ''">20-11-2026</dd>
-        </div>
-        <div>
-          <dt>Hora</dt>
-          <dd th:text="${reserva.hora != null} ? ${#temporals.format(reserva.hora, 'HH:mm')} : ''">20:00</dd>
-        </div>
-        <div>
-          <dt>Personas</dt>
-          <dd th:text="*{personas}">2</dd>
-        </div>
-      </dl>
-      <!-- por si algun dato oculto llega mal, por ejemplo si escribieron la direccion a mano -->
-      <p class="error-campo" th:if="${#fields.hasErrors('mesaId') or #fields.hasErrors('fecha') or #fields.hasErrors('hora') or #fields.hasErrors('personas')}">
-        Faltan datos de la reserva. Vuelve a elegir la mesa en el buscador.
-      </p>
-      <!-- Vuelve al buscador con la busqueda actual -->
-      <a class="enlace-cambiar" th:unless="${editando}"
-         th:href="@{/reservas/disponibilidad(fecha=*{fecha}, hora=*{hora}, personas=*{personas})}">Cambiar día, hora o mesa</a>
-      <a class="enlace-cambiar" th:if="${editando}"
-         th:href="@{/reservas/disponibilidad(reservaId=${reservaId}, email=*{email}, fecha=*{fecha}, hora=*{hora}, personas=*{personas})}">Cambiar día, hora o mesa</a>
+      <!-- Dia, hora, personas y mesa se cambian aqui mismo, la lista de mesas solo trae las libres para ese turno y grupo
+           y el service igual vuelve a validar todo al guardar -->
+      <div class="campos">
+        <label>Fecha
+          <input type="date" th:field="*{fecha}" th:min="${hoy}" class="cambia-turno" required>
+          <small class="error-campo" th:if="${#fields.hasErrors('fecha')}" th:errors="*{fecha}"></small>
+        </label>
+        <label>Hora
+          <select th:field="*{hora}" class="cambia-turno" required>
+            <option th:each="h : ${horarios}" th:value="${#temporals.format(h, 'HH:mm')}" th:text="${#temporals.format(h, 'HH:mm')}">20:00</option>
+          </select>
+          <small class="error-campo" th:if="${#fields.hasErrors('hora')}" th:errors="*{hora}"></small>
+        </label>
+        <label>Personas
+          <input type="number" th:field="*{personas}" min="1" max="20" class="cambia-turno" required>
+          <small class="error-campo" th:if="${#fields.hasErrors('personas')}" th:errors="*{personas}"></small>
+        </label>
+        <label>Mesa
+          <select th:field="*{mesaId}" required>
+            <option value="">Elige una mesa</option>
+            <option th:each="m : ${mesas}" th:value="${m.id}"
+                    th:text="'Mesa ' + ${m.numero} + ', ' + ${m.ubicacion.etiqueta} + ', hasta ' + ${m.capacidad} + ' personas'">Mesa 3, Salón, hasta 4 personas</option>
+          </select>
+          <small class="error-campo" th:if="${#fields.hasErrors('mesaId')}" th:errors="*{mesaId}"></small>
+        </label>
+      </div>
+      <p class="sub" th:if="${#lists.isEmpty(mesas)}">No quedan mesas libres para ese día, hora y personas. Prueba con otro turno.</p>
 
       <label>Comentario <span class="opcional">(opcional)</span>
         <textarea th:field="*{comentario}" rows="2" maxlength="200"
@@ -116,6 +111,25 @@
     if (nombre && !nombre.readOnly) {
       nombre.addEventListener('input', function () {
         nombre.value = nombre.value.replace(/[^A-Za-zÁÉÍÓÚáéíóúÑñÜü ]/g, '').replace(/ {2,}/g, ' ');
+      });
+    }
+    // Si cambia el dia, la hora o las personas recargamos el formulario para traer las mesas libres,
+    // se mandan tambien los demas campos para no perder lo que ya se escribio
+    var form = document.querySelector('form[data-recargar]');
+    if (form) {
+      form.querySelectorAll('.cambia-turno').forEach(function (campo) {
+        campo.addEventListener('change', function () {
+          var fecha = form.querySelector('[name=fecha]').value;
+          var personas = form.querySelector('[name=personas]').value;
+          if (!fecha || !personas) return;
+          var url = new URL(form.dataset.recargar, window.location.href);
+          ['fecha', 'hora', 'personas', 'mesaId', 'comentario', 'nombre', 'email', 'telefono'].forEach(function (n) {
+            var c = form.querySelector('[name=' + n + ']');
+            // los datos bloqueados al modificar ya los tiene el servidor
+            if (c && c.value && !c.readOnly) url.searchParams.set(n, c.value);
+          });
+          window.location.href = url.toString();
+        });
       });
     }
     // Contador de caracteres del comentario

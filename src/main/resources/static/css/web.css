@@ -216,14 +216,4 @@ tr.apagada { color: var(--texto-suave); }
   .filtros-admin label + label { flex: 0 1 15rem; }
 }
 
-/* Resumen fijo de la reserva en el formulario */
-.resumen { margin: 0; display: grid; grid-template-columns: repeat(2, 1fr); gap: .9rem 1.5rem;
-           padding: 1rem 1.1rem; background: var(--fondo); border: 1px solid var(--linea); border-radius: 3px; }
-.resumen dt { font-size: .85rem; color: var(--texto-suave); }
-.resumen dd { margin: 0; font-family: var(--serif); font-size: 1.35rem; font-weight: 600; color: var(--vino); }
-.enlace-cambiar { justify-self: start; font-size: .92rem; }
-@media (min-width: 700px) {
-  .resumen { grid-template-columns: repeat(4, auto); justify-content: space-between; }
-}
-
 .contador-texto { justify-self: end; font-size: .8rem; color: var(--texto-suave); font-weight: 400; }

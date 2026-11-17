@@ -4,10 +4,8 @@
 <body>
 <header th:replace="~{fragments :: menu}"></header>
 <main>
-  <h1 th:text="${modificando} ? 'Cambiar reserva #' + ${reservaId} : 'Mesas disponibles'">Mesas disponibles</h1>
-  <p class="sub" th:unless="${modificando}">Te mostramos solo las mesas libres en ese turno y con espacio para tu grupo.</p>
-  <p class="sub" th:if="${modificando}">Elige el nuevo día, hora o cantidad de personas y luego la mesa. Tu mesa actual aparece como libre.
-    <a th:href="@{/reservas/{id}/editar(id=${reservaId}, email=${email})}">Volver sin cambiar</a></p>
+  <h1>Mesas disponibles</h1>
+  <p class="sub">Te mostramos solo las mesas libres en ese turno y con espacio para tu grupo.</p>
 
   <!-- Buscador por GET para que la busqueda quede en la direccion -->
   <form class="panel buscador" method="get" th:action="@{/reservas/disponibilidad}">
@@ -22,11 +20,6 @@
     <label>Personas
       <input type="number" name="personas" min="1" max="20" th:value="${personas}" required>
     </label>
-    <!-- al modificar se mandan ocultos la reserva y el correo para no perderlos -->
-    <th:block th:if="${modificando}">
-      <input type="hidden" name="reservaId" th:value="${reservaId}">
-      <input type="hidden" name="email" th:value="${email}">
-    </th:block>
     <button type="submit" class="btn">Buscar</button>
   </form>
 
@@ -45,11 +38,7 @@
         <p class="mesa-numero" th:text="'Mesa ' + ${m.numero}">Mesa 1</p>
         <p class="chip neutro" th:text="${m.ubicacion.etiqueta}">Salón</p>
         <p th:text="'Hasta ' + ${m.capacidad} + ' personas'">Hasta 4 personas</p>
-        <!-- Al reservar va al formulario y al modificar vuelve a la reserva con la mesa nueva -->
-        <a class="btn" th:unless="${modificando}"
-           th:href="@{/reservas/nueva(mesaId=${m.id}, fecha=${fecha}, hora=${hora}, personas=${personas})}">Reservar esta mesa</a>
-        <a class="btn" th:if="${modificando}"
-           th:href="@{/reservas/{id}/editar(id=${reservaId}, email=${email}, mesaId=${m.id}, fecha=${fecha}, hora=${hora}, personas=${personas})}">Elegir esta mesa</a>
+        <a class="btn" th:href="@{/reservas/nueva(mesaId=${m.id}, fecha=${fecha}, hora=${hora}, personas=${personas})}">Reservar esta mesa</a>
       </article>
     </div>
 
